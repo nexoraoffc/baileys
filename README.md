@@ -1,0 +1,330 @@
+# <div align='center'>github:xcoursed/baileys</div>
+<div align='center'>
+  <img src="https://files.catbox.moe/rhuggz.jpg"></img>
+</div>
+
+--- 
+
+## Usage
+```json
+"depencies": {
+  "xcoursed/baileys": "github:xcoursed/baileys"
+  // or "@whiskeysocket/baileys": "github:xcoursed/baileys"
+}
+```
+## Import
+```javascript
+const {
+  default: makeWASocket,
+  // Other functionz
+} = require('xcoursed/baileys');
+```
+
+---
+# How To Connect To Whatsapp
+## With QR Code
+```javascript
+const {
+  default: makeWASocket,
+  Browsers
+} = require('xcoursed/baileys');
+
+const client = makeWASocket({
+  browser: Browsers.ubuntu('Chrome'),
+  printQRInTerminal: true
+})
+```
+
+## Connect With Number
+```javascript
+const {
+  default: makeWASocket,
+  fetchLatestWAWebVersion,
+  Browsers
+} = require('xcoursed/baileys');
+
+const client = makeWASocket({
+  browser: Browsers.ubuntu('Chrome'),
+  printQRInTerminal: false,
+  version: fetchLatestWAWebVersion()
+  aiLabel: false // enable for ai label in every message are bot send
+  // Other options
+});
+
+const number = "628XXXXX";
+const code = await client.requestPairingCode(number.trim) //Use : (number, "YYYYYYYY") for custom-pairing
+
+console.log("Ur pairing code : " + code)
+```
+
+# Store Data
+```javascript
+const {
+  default: makeWASocket,
+  makeInMemoryStore
+} = require('xcoursed/baileys');
+const pino = require('pino');
+
+const store = makeInMemoryStore({
+  logger: pino().child({ level: 'silent', stream: 'store' })
+});
+const client = makeWASocket({
+  // optionz
+});
+store.bind(client.ev)
+
+client.ev.on('contacts.upsert', () => {
+  console.log('Get new contact: ' + Object.values(store.contacts()));
+})
+```
+# Sending messages
+
+## send/relay message with participant
+```javascript
+await client.relayMessage(m.chat, {
+  conversation: "Xaz zepysK"
+}, {
+  participant: true
+})
+// or
+await client.sendMessage(m.chat, {
+  text: "Xaz zepysK"
+}, {
+  participant: true
+})
+```
+## send orderMessage
+```javascript
+const fs = require('fs');
+const ZeppImg = fs.readFileSync('./ZeppImage');
+
+await client.sendMessage(m.chat, {
+  thumbnail: ZeppImg,
+  message: "Gotta get a grip",
+  orderTitle: "7eppeli-Corporation",
+  totalAmount1000: 72502,
+  totalCurrencyCode: "IDR"
+}, { quoted:m })
+```
+
+## send pollResultSnapshotMessage
+```javascript
+await client.sendMessage(m.chat, {
+  pollResultMessage: {
+    name: "7eppeli-Corporation",
+    options: [
+      {
+        optionName: "poll 1"
+      },
+      {
+        optionName: "poll 2"
+      }
+    ],
+    newsletter: {
+      newsletterName: "7eppeli | Killer Queen Information",
+      newsletterJid: "1@newsletter"
+    }
+  }
+})
+```
+
+## send productMessage
+```javascript
+await client.relayMessage(m.chat, {
+  productMessage {
+    title: "7eppeli.pdf",
+    description: "zZZ...",
+    thumbnail: { url: "./ZeppImage" },
+    productId: "EXAMPLE_TOKEN",
+    retailerId: "EXAMPLE_RETAILER_ID",
+    url: "https://t.me/YuukeyD7eppeli",
+    body: "Nak Tido",
+    footer: "Footer",
+    buttons: [
+      {
+        name: "cta_url",
+        buttonParamsJson: "{\"display_text\":\"7eppeli-org\",\"url\":\"https://t.me/YuukeyD7eppeli\"}"
+      }
+    ],
+    priceAmount1000: 72502,
+    currencyCode: "IDR"
+  }
+})
+```
+
+## send interactiveMessage
+```javascript
+await client.sendMessage(m.chat, {
+  image: { url: "./Xjpeg.jpg" },
+  text: "body",
+  title: "title", // if media, should put title in
+  footer: "footer",
+  interactiveButtons: [
+    {
+      name: "single_select",
+      buttonParamsJson: JSON.stringify({
+        title: "\0"
+      })
+    }
+  ],
+  messageParams: JSON.stringify({
+    bottom_sheet: {
+      /** ot params **/
+    }
+  })
+})
+```
+
+## send member label
+```javascript
+await client.sendMessage(m.chat, {
+  groupLabel: {
+    labelText: "Tag anggota tercantum di sini"
+  }
+})
+```
+
+## send message to members in group
+```javascript
+await client.sendMessageMembers(m.chat, {
+  extendedTextMessage: {
+    text: "save aku 7epsync"
+  }
+}, {})
+```
+# Simple sendMessage
+
+## send text
+```javascript
+await client.sendText(m.chat, "7eppsynC", {
+  contextInfo: {
+    mentionedJid: [m.chat]
+  }
+}, {
+  key: {
+    remoteJid: "status@broadcast",
+    participant: m.sender,
+    fromMe: true
+  },
+  message: {
+    conversation: "\0"
+  }
+})
+```
+## send image
+```javascript
+await client.sendImage(m.chat, { url: "./zepy.jpg" }, "7eppsynC", {
+  contextInfo: {
+    mentionedJid: [m.chat]
+  }
+}, {
+  key: {
+    remoteJid: "status@broadcast",
+    participant: m.sender,
+    fromMe: true
+  },
+  message: {
+    conversation: "\0"
+  }
+})
+```
+
+## send video
+```javascript
+await client.sendVideo(m.chat, { url: "./zepy.mp4" }, "7eppsynC", {
+  contextInfo: {
+    mentionedJid: [m.chat]
+  }
+}, {
+  key: {
+    remoteJid: "status@broadcast",
+    participant: m.sender,
+    fromMe: true
+  },
+  message: {
+    conversation: "\0"
+  }
+})
+```
+
+## send audio
+```javascript
+await client.sendAudio(m.chat, { url: "./zepy.mp3" }, {
+  contextInfo: {
+    mentionedJid: [m.chat]
+  }
+}, {
+  key: {
+    remoteJid: "status@broadcast",
+    participant: m.sender,
+    fromMe: true
+  },
+  message: {
+    conversation: "\0"
+  }
+})
+```
+
+## send location
+```javascript
+await client.sendLocation(m.chat, "7eppsynC", 90.0, 90.0, "https://t.me/XzC_Info", "1234567890", {
+  contextInfo: {
+    mentionedJid: [m.chat]
+  }
+}, {
+  key: {
+    remoteJid: "status@broadcast",
+    participant: m.sender,
+    fromMe: true
+  },
+  message: {
+    conversation: "\0"
+  }
+})
+```
+
+## send polling
+```javascript
+await client.sendPoll(m.chat, "7eppsynC", ["1", "2", "3"], true, {
+  contextInfo: {
+    mentionedJid: [m.chat]
+  }
+}, {
+  key: {
+    remoteJid: "status@broadcast",
+    participant: m.sender,
+    fromMe: true
+  },
+  message: {
+    conversation: "\0"
+  }
+})
+```
+
+## send quiz
+```javascript
+await client.sendQuiz(m.chat, "7eppsynC", ["1", "2", "3"], "2", {
+  contextInfo: {
+    mentionedJid: [m.chat]
+  }
+}, {
+  key: {
+    remoteJid: "status@broadcast",
+    participant: m.sender,
+    fromMe: true
+  },
+  message: {
+    conversation: "\0"
+  }
+})
+```
+
+## send status mention
+```javascript
+await client.statusMention(m.chat, {
+  extendedTextMessage: {
+    text: "7eppsynC"
+  }
+})
+```
+Follow https://t.me/XzC_Information kalau mau liat type message yg lain :v
